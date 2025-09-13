@@ -47,6 +47,16 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Government/Agricultural theme
+        gov: {
+          primary: "hsl(var(--gov-primary))",
+          secondary: "hsl(var(--gov-secondary))",
+        },
+        farm: {
+          green: "hsl(var(--farm-green))",
+          brown: "hsl(var(--earth-brown))",
+          harvest: "hsl(var(--golden-harvest))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
