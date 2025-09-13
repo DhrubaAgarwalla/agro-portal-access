@@ -37,95 +37,80 @@ const Landing = () => {
           </div>
         </header>
 
-        {/* Hero Section */}
-        <main className="px-6 py-20">
-          <div className="max-w-7xl mx-auto">
+        {/* Main Content */}
+        <main className="px-6 py-16">
+          <div className="max-w-4xl mx-auto">
+            {/* Welcome Section */}
             <div className="text-center mb-16">
-              <h2 className="text-5xl font-bold text-foreground mb-6">
-                Blockchain-Based Supply Chain
-                <span className="block text-gov-primary">Transparency for Agriculture</span>
+              <h2 className="text-4xl font-bold text-foreground mb-6">
+                Blockchain-Based Supply Chain Transparency for Agricultural Produce
               </h2>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-                Ensuring transparency, traceability, and trust in agricultural produce 
-                from farm to table through cutting-edge blockchain technology.
-              </p>
-              <div className="flex gap-4 justify-center">
-                <Button 
-                  size="lg" 
-                  onClick={() => navigate("/auth")}
-                  className="bg-gov-primary hover:bg-gov-primary/90"
-                >
-                  Get Started
-                </Button>
-                <Button size="lg" variant="outline">
-                  Learn More
-                </Button>
-              </div>
-            </div>
-
-            {/* Features Grid */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-              <Card className="bg-card/80 backdrop-blur-sm border-border/20">
-                <CardContent className="p-6 text-center">
-                  <Shield className="w-12 h-12 text-gov-primary mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Secure & Transparent</h3>
-                  <p className="text-muted-foreground text-sm">
-                    Immutable blockchain records ensure data integrity and transparency
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-card/80 backdrop-blur-sm border-border/20">
-                <CardContent className="p-6 text-center">
-                  <Users className="w-12 h-12 text-gov-primary mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Farmer Empowerment</h3>
-                  <p className="text-muted-foreground text-sm">
-                    Direct access to markets and fair pricing for agricultural produce
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-card/80 backdrop-blur-sm border-border/20">
-                <CardContent className="p-6 text-center">
-                  <Package className="w-12 h-12 text-gov-primary mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Full Traceability</h3>
-                  <p className="text-muted-foreground text-sm">
-                    Track produce from farm origin to final consumer destination
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-card/80 backdrop-blur-sm border-border/20">
-                <CardContent className="p-6 text-center">
-                  <TrendingUp className="w-12 h-12 text-gov-primary mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Market Insights</h3>
-                  <p className="text-muted-foreground text-sm">
-                    Real-time market data and analytics for informed decisions
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* CTA Section */}
-            <div className="text-center">
-              <Card className="bg-gov-primary/10 backdrop-blur-sm border-gov-primary/20 max-w-2xl mx-auto">
+              <Card className="bg-card/90 backdrop-blur-sm border-border/20">
                 <CardContent className="p-8">
-                  <h3 className="text-2xl font-bold text-foreground mb-4">
-                    Ready to Transform Agriculture?
-                  </h3>
-                  <p className="text-muted-foreground mb-6">
-                    Join thousands of farmers already using our platform to ensure 
-                    transparency and get fair prices for their produce.
+                  <h3 className="text-2xl font-semibold text-foreground mb-4">Welcome</h3>
+                  <p className="text-lg text-muted-foreground leading-relaxed">
+                    The Government of Odisha presents a transparent and decentralized platform to track agricultural produce from farm to consumer. Our platform ensures fair pricing, verifies produce quality and origin, and protects stakeholders in the supply chain.
                   </p>
-                  <Button 
-                    size="lg" 
-                    onClick={() => navigate("/auth")}
-                    className="bg-gov-primary hover:bg-gov-primary/90"
-                  >
-                    Start Your Journey
-                  </Button>
                 </CardContent>
               </Card>
+            </div>
+
+            {/* Guidelines Section */}
+            <div className="mb-16">
+              <Card className="bg-card/90 backdrop-blur-sm border-border/20">
+                <CardContent className="p-8">
+                  <h3 className="text-2xl font-semibold text-foreground mb-6">Guidelines for Users</h3>
+                  <ul className="text-muted-foreground space-y-3 text-left">
+                    <li className="flex items-start">
+                      <span className="text-gov-primary mr-2">•</span>
+                      Scan QR codes on packaging or produce labels to access full details.
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-gov-primary mr-2">•</span>
+                      Verify transaction records before making purchases.
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-gov-primary mr-2">•</span>
+                      Report suspicious activity through the complaint section.
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-gov-primary mr-2">•</span>
+                      Ensure your device is connected to the internet while accessing the platform.
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-gov-primary mr-2">•</span>
+                      Follow data privacy and usage guidelines as provided during registration.
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Contact Section */}
+            <div className="mb-16">
+              <Card className="bg-card/90 backdrop-blur-sm border-border/20">
+                <CardContent className="p-8">
+                  <h3 className="text-2xl font-semibold text-foreground mb-6">Contact Us</h3>
+                  <div className="text-muted-foreground text-left space-y-2">
+                    <p className="font-semibold text-foreground">Electronics & IT Department, Government of Odisha</p>
+                    <p>📍 Bhubaneswar, Odisha, India</p>
+                    <p>📞 Helpline: +91-12345-67890</p>
+                    <p>📧 Email: support@odishaagri.gov.in</p>
+                    <p>🌐 Website: www.odishaagri.gov.in</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Access Button */}
+            <div className="text-center">
+              <Button 
+                size="lg" 
+                onClick={() => navigate("/auth")}
+                className="bg-gov-primary hover:bg-gov-primary/90"
+              >
+                Access Platform
+              </Button>
             </div>
           </div>
         </main>
