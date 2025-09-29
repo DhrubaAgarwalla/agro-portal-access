@@ -10,22 +10,45 @@ import farmBackground from "@/assets/farm-background.jpg";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Demo credentials
+  const demoAccounts = {
+    farmer: { email: "farmer@demo.com", password: "farmer123", route: "/farmer" },
+    distributor: { email: "distributor@demo.com", password: "dist123", route: "/distributor" }
+  };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate authentication
+    // Check demo credentials
     setTimeout(() => {
       setIsLoading(false);
-      toast({
-        title: "Welcome back!",
-        description: "Successfully signed in to your account.",
-      });
-      navigate("/farmer");
-    }, 1500);
+      
+      if (email === demoAccounts.farmer.email && password === demoAccounts.farmer.password) {
+        toast({
+          title: "Welcome Farmer!",
+          description: "Successfully signed in to your account.",
+        });
+        navigate(demoAccounts.farmer.route);
+      } else if (email === demoAccounts.distributor.email && password === demoAccounts.distributor.password) {
+        toast({
+          title: "Welcome Distributor!",
+          description: "Successfully signed in to your account.",
+        });
+        navigate(demoAccounts.distributor.route);
+      } else {
+        toast({
+          title: "Invalid credentials",
+          description: "Please use demo credentials: farmer@demo.com / farmer123 or distributor@demo.com / dist123",
+          variant: "destructive"
+        });
+      }
+    }, 1000);
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -87,12 +110,19 @@ const Auth = () => {
             
             <TabsContent value="signin">
               <form onSubmit={handleSignIn} className="space-y-4">
+                <div className="p-3 bg-muted rounded-lg text-sm space-y-1">
+                  <p className="font-semibold">Demo Credentials:</p>
+                  <p>👨‍🌾 Farmer: farmer@demo.com / farmer123</p>
+                  <p>📦 Distributor: distributor@demo.com / dist123</p>
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="signin-email">Email</Label>
                   <Input
                     id="signin-email"
                     type="email"
                     placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
@@ -102,6 +132,8 @@ const Auth = () => {
                     id="signin-password"
                     type="password"
                     placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                 </div>

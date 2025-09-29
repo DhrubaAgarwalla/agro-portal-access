@@ -8,10 +8,46 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { Package, LogOut, User, ShoppingCart, Truck, History } from "lucide-react";
 
+// Random ID generator
+const generateOrderId = () => `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+const generateTxId = () => `TX-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
 const Distributor = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [selectedProduce, setSelectedProduce] = useState<string[]>([]);
+
+  // Bulk order form state
+  const [bulkProduceType, setBulkProduceType] = useState("");
+  const [bulkQuantity, setBulkQuantity] = useState("");
+  const [deliveryLocation, setDeliveryLocation] = useState("");
+  const [expectedDate, setExpectedDate] = useState("");
+
+  // Available produce from farmers
+  const [availableProduce] = useState([
+    { id: "PRD-001", name: "Wheat", quantity: "20kg", price: "₹500", farmer: "Ramesh Kumar", location: "Cuttack", quality: "Premium" },
+    { id: "PRD-002", name: "Rice", quantity: "50kg", price: "₹1200", farmer: "Suresh Patel", location: "Puri", quality: "Grade A" },
+    { id: "PRD-003", name: "Vegetables", quantity: "30kg", price: "₹450", farmer: "Anjali Singh", location: "Bhubaneswar", quality: "Fresh" },
+    { id: "PRD-004", name: "Pulses", quantity: "25kg", price: "₹800", farmer: "Madhav Rao", location: "Berhampur", quality: "Premium" },
+  ]);
+
+  // Current inventory
+  const [inventory, setInventory] = useState([
+    { id: "INV-001", name: "Wheat", quantity: "100kg", location: "Warehouse A", status: "In Stock" },
+    { id: "INV-002", name: "Rice", quantity: "200kg", location: "Warehouse B", status: "In Stock" },
+    { id: "INV-003", name: "Vegetables", quantity: "50kg", location: "Cold Storage", status: "Low Stock" },
+  ]);
+
+  // Delivery tracking
+  const [deliveries, setDeliveries] = useState([
+    { id: "DEL-001", produce: "Wheat", quantity: "50kg", from: "Cuttack", to: "Warehouse A", status: "In Transit", eta: "2 hours" },
+    { id: "DEL-002", produce: "Rice", quantity: "100kg", from: "Puri", to: "Warehouse B", status: "Delivered", eta: "-" },
+  ]);
+
+  // Transaction history
+  const [transactions, setTransactions] = useState([
+    { id: "TX-001", produce: "Wheat", quantity: "50kg", amount: "₹1250", farmer: "Ramesh Kumar", date: "2025-01-10", hash: "0x7a8b9c..." },
+    { id: "TX-002", produce: "Rice", quantity: "100kg", amount: "₹2400", farmer: "Suresh Patel", date: "2025-01-08", hash: "0x4d5e6f..." },
+  ]);
 
   const handleSignOut = () => {
     toast({
@@ -21,40 +57,67 @@ const Distributor = () => {
     navigate("/");
   };
 
-  const handlePlaceOrder = (produceId: string) => {
-    setSelectedProduce([...selectedProduce, produceId]);
+  const handlePlaceOrder = (produceItem: any) => {
+    const orderId = generateOrderId();
+    const txId = generateTxId();
+    
+    // Add to transactions
+    const newTransaction = {
+      id: txId,
+      produce: produceItem.name,
+      quantity: produceItem.quantity,
+      amount: produceItem.price,
+      farmer: produceItem.farmer,
+      date: new Date().toLocaleDateString('en-IN'),
+      hash: `0x${Math.random().toString(16).substr(2, 8)}...`
+    };
+    
+    setTransactions([newTransaction, ...transactions]);
+    
+    // Add to deliveries
+    const newDelivery = {
+      id: `DEL-${Date.now()}`,
+      produce: produceItem.name,
+      quantity: produceItem.quantity,
+      from: produceItem.location,
+      to: "Main Warehouse",
+      status: "Processing",
+      eta: "Calculating..."
+    };
+    
+    setDeliveries([newDelivery, ...deliveries]);
+    
     toast({
-      title: "Order Placed",
-      description: "Your order has been successfully placed.",
+      title: "Order Placed Successfully!",
+      description: `Order ID: ${orderId} | Transaction ID: ${txId}`,
     });
   };
 
-  // Available produce from farmers
-  const availableProduce = [
-    { id: "1", name: "Wheat", quantity: "20kg", price: "₹500", farmer: "Ramesh Kumar", location: "Cuttack", quality: "Premium" },
-    { id: "2", name: "Rice", quantity: "50kg", price: "₹1200", farmer: "Suresh Patel", location: "Puri", quality: "Grade A" },
-    { id: "3", name: "Vegetables", quantity: "30kg", price: "₹450", farmer: "Anjali Singh", location: "Bhubaneswar", quality: "Fresh" },
-    { id: "4", name: "Pulses", quantity: "25kg", price: "₹800", farmer: "Madhav Rao", location: "Berhampur", quality: "Premium" },
-  ];
+  const handleBulkOrder = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!bulkProduceType || !bulkQuantity || !deliveryLocation || !expectedDate) {
+      toast({
+        title: "Missing fields",
+        description: "Please fill all fields before submitting.",
+        variant: "destructive"
+      });
+      return;
+    }
 
-  // Current inventory
-  const inventory = [
-    { id: "1", name: "Wheat", quantity: "100kg", location: "Warehouse A", status: "In Stock" },
-    { id: "2", name: "Rice", quantity: "200kg", location: "Warehouse B", status: "In Stock" },
-    { id: "3", name: "Vegetables", quantity: "50kg", location: "Cold Storage", status: "Low Stock" },
-  ];
+    const orderId = generateOrderId();
+    
+    toast({
+      title: "Bulk Order Submitted!",
+      description: `Order ID: ${orderId} for ${bulkQuantity} of ${bulkProduceType}`,
+    });
 
-  // Delivery tracking
-  const deliveries = [
-    { id: "D001", produce: "Wheat", quantity: "50kg", from: "Cuttack", to: "Warehouse A", status: "In Transit", eta: "2 hours" },
-    { id: "D002", produce: "Rice", quantity: "100kg", from: "Puri", to: "Warehouse B", status: "Delivered", eta: "-" },
-  ];
-
-  // Transaction history
-  const transactions = [
-    { id: "TX001", produce: "Wheat", quantity: "50kg", amount: "₹1250", farmer: "Ramesh Kumar", date: "2025-01-10", hash: "0x7a8b9c..." },
-    { id: "TX002", produce: "Rice", quantity: "100kg", amount: "₹2400", farmer: "Suresh Patel", date: "2025-01-08", hash: "0x4d5e6f..." },
-  ];
+    // Reset form
+    setBulkProduceType("");
+    setBulkQuantity("");
+    setDeliveryLocation("");
+    setExpectedDate("");
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -116,7 +179,7 @@ const Distributor = () => {
                         </span>
                       </td>
                       <td className="p-3">
-                        <Button size="sm" onClick={() => handlePlaceOrder(item.id)}>
+                        <Button size="sm" onClick={() => handlePlaceOrder(item)}>
                           Order
                         </Button>
                       </td>
@@ -209,34 +272,52 @@ const Distributor = () => {
               <CardTitle>Place Bulk Order</CardTitle>
               <CardDescription>Request large quantities directly</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="produce-type">Produce Type</Label>
-                <Select>
-                  <SelectTrigger id="produce-type">
-                    <SelectValue placeholder="Select produce" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="wheat">Wheat</SelectItem>
-                    <SelectItem value="rice">Rice</SelectItem>
-                    <SelectItem value="vegetables">Vegetables</SelectItem>
-                    <SelectItem value="pulses">Pulses</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="bulk-quantity">Quantity (kg)</Label>
-                <Input id="bulk-quantity" type="number" placeholder="Enter quantity" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="delivery-location">Delivery Location</Label>
-                <Input id="delivery-location" placeholder="Enter location" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="expected-date">Expected Delivery Date</Label>
-                <Input id="expected-date" type="date" />
-              </div>
-              <Button className="w-full">Submit Bulk Order Request</Button>
+            <CardContent>
+              <form onSubmit={handleBulkOrder} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="produce-type">Produce Type</Label>
+                  <Select value={bulkProduceType} onValueChange={setBulkProduceType}>
+                    <SelectTrigger id="produce-type">
+                      <SelectValue placeholder="Select produce" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Wheat">Wheat</SelectItem>
+                      <SelectItem value="Rice">Rice</SelectItem>
+                      <SelectItem value="Vegetables">Vegetables</SelectItem>
+                      <SelectItem value="Pulses">Pulses</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="bulk-quantity">Quantity (kg)</Label>
+                  <Input 
+                    id="bulk-quantity" 
+                    type="number" 
+                    placeholder="Enter quantity" 
+                    value={bulkQuantity}
+                    onChange={(e) => setBulkQuantity(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="delivery-location">Delivery Location</Label>
+                  <Input 
+                    id="delivery-location" 
+                    placeholder="Enter location" 
+                    value={deliveryLocation}
+                    onChange={(e) => setDeliveryLocation(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="expected-date">Expected Delivery Date</Label>
+                  <Input 
+                    id="expected-date" 
+                    type="date" 
+                    value={expectedDate}
+                    onChange={(e) => setExpectedDate(e.target.value)}
+                  />
+                </div>
+                <Button type="submit" className="w-full">Submit Bulk Order Request</Button>
+              </form>
             </CardContent>
           </Card>
         </div>
