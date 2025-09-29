@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { LogOut, QrCode, Upload } from "lucide-react";
+import { useAuthStore } from "@/store/useAuthStore";
+import { LogOut, QrCode, Upload, UserCircle } from "lucide-react";
 
 // Random ID generator
 const generateId = () => `PRD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -14,6 +15,7 @@ const generateId = () => `PRD-${Date.now()}-${Math.random().toString(36).substr(
 const Farmer = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { connectedAddress } = useAuthStore();
 
   // Form state
   const [produceName, setProduceName] = useState("");
@@ -34,10 +36,19 @@ const Farmer = () => {
   ]);
 
   const handleSignOut = () => {
+    // Clear the auth store
+    useAuthStore.setState({
+      authUser: false,
+      connectedAddress: null,
+      contractInstance: null
+    });
+
     toast({
       title: "Signed out successfully",
-      description: "You have been logged out of your account.",
+      description: "Wallet disconnected. You have been logged out.",
     });
+    
+    // Navigate to login page
     navigate("/");
   };
 
@@ -83,9 +94,18 @@ const Farmer = () => {
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <h1 className="text-xl font-bold text-primary">Gov. Odisha Agriculture</h1>
           <div className="flex items-center space-x-4">
-            <span className="font-medium">Rajesh Kumar</span>
+            <div className="text-right">
+              
+              {connectedAddress && (
+                <p className="text-xs text-muted-foreground font-mono">
+                  {connectedAddress.slice(0, 6)}...{connectedAddress.slice(-4)}
+                </p>
+              )}
+            </div>
             <Avatar>
-              <AvatarFallback>RK</AvatarFallback>
+              <AvatarFallback>
+                <UserCircle className="h-6 w-6" />
+              </AvatarFallback>
             </Avatar>
             <Button variant="outline" size="sm" onClick={handleSignOut}>
               <LogOut className="h-4 w-4 mr-2" />

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useAuthStore } from "@/store/useAuthStore";
 import { Package, LogOut, User, ShoppingCart, Truck, History } from "lucide-react";
 
 // Random ID generator
@@ -15,6 +16,7 @@ const generateTxId = () => `TX-${Date.now()}-${Math.random().toString(36).substr
 const Distributor = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { connectedAddress } = useAuthStore();
 
   // Bulk order form state
   const [bulkProduceType, setBulkProduceType] = useState("");
@@ -50,10 +52,19 @@ const Distributor = () => {
   ]);
 
   const handleSignOut = () => {
+    // Clear the auth store
+    useAuthStore.setState({
+      authUser: false,
+      connectedAddress: null,
+      contractInstance: null
+    });
+
     toast({
       title: "Signed out successfully",
-      description: "You have been logged out of your account.",
+      description: "Wallet disconnected. You have been logged out.",
     });
+    
+    // Navigate to login page
     navigate("/");
   };
 
@@ -131,7 +142,14 @@ const Distributor = () => {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <User className="h-5 w-5 text-muted-foreground" />
-              <span className="font-medium">ABC Distribution Co.</span>
+              <div className="text-right">
+                <span className="font-medium block">ABC Distribution Co.</span>
+                {connectedAddress && (
+                  <p className="text-xs text-muted-foreground font-mono">
+                    {connectedAddress.slice(0, 6)}...{connectedAddress.slice(-4)}
+                  </p>
+                )}
+              </div>
             </div>
             <Button onClick={handleSignOut} variant="outline" size="sm">
               <LogOut className="h-4 w-4 mr-2" />
