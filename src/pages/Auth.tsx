@@ -5,50 +5,55 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useAuthStore } from "@/store/useAuthStore";
 import farmBackground from "@/assets/farm-background.jpg";
+import { walletRoutes } from "@/config/wallets";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const [selectedRole, setSelectedRole] = useState("");
+  const [kycData, setKycData] = useState<any>({});
   const { toast } = useToast();
+  const { connectWallet, isLoggingIn, connectedAddress } = useAuthStore();
 
-  // Demo credentials
-  const demoAccounts = {
-    farmer: { email: "farmer@demo.com", password: "farmer123", route: "/farmer" },
-    distributor: { email: "distributor@demo.com", password: "dist123", route: "/distributor" }
-  };
+  // Demo wallet addresses for routing (you can update these later)
+  
 
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    // Check demo credentials
-    setTimeout(() => {
-      setIsLoading(false);
+  const handleWalletConnect = async () => {
+    try {
+      await connectWallet();
       
-      if (email === demoAccounts.farmer.email && password === demoAccounts.farmer.password) {
-        toast({
-          title: "Welcome Farmer!",
-          description: "Successfully signed in to your account.",
-        });
-        navigate(demoAccounts.farmer.route);
-      } else if (email === demoAccounts.distributor.email && password === demoAccounts.distributor.password) {
-        toast({
-          title: "Welcome Distributor!",
-          description: "Successfully signed in to your account.",
-        });
-        navigate(demoAccounts.distributor.route);
-      } else {
-        toast({
-          title: "Invalid credentials",
-          description: "Please use demo credentials: farmer@demo.com / farmer123 or distributor@demo.com / dist123",
-          variant: "destructive"
-        });
+      // Get the connected address from the store
+      const address = useAuthStore.getState().connectedAddress;
+      
+      if (address) {
+        // Route based on wallet address
+        if (address.toLowerCase() === walletRoutes.farmer.toLowerCase()) {
+          toast({
+            title: "Welcome Farmer!",
+            description: "Wallet connected successfully. Redirecting to farmer dashboard...",
+          });
+          navigate("/farmer");
+        } else if (address.toLowerCase() === walletRoutes.distributor.toLowerCase()) {
+          toast({
+            title: "Welcome Distributor!",
+            description: "Wallet connected successfully. Redirecting to distributor dashboard...",
+          });
+          navigate("/distributor");
+        } else {
+          toast({
+            title: "Access Granted",
+            description: "Wallet connected successfully. Redirecting to home page...",
+          });
+          navigate("/home");
+        }
       }
-    }, 1000);
+    } catch (error) {
+      console.error("Wallet connection failed:", error);
+    }
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -64,6 +69,146 @@ const Auth = () => {
       });
       navigate("/farmer");
     }, 1500);
+  };
+
+  const getRoleSpecificFields = () => {
+    switch (selectedRole) {
+      case "farmer":
+        return (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="farmName">Farm Name</Label>
+              <Input
+                id="farmName"
+                placeholder="Enter your farm name"
+                value={kycData.farmName || ""}
+                onChange={e => setKycData({ ...kycData, farmName: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="farmSize">Farm Size (acres)</Label>
+              <Input
+                id="farmSize"
+                type="number"
+                placeholder="Enter farm size"
+                value={kycData.farmSize || ""}
+                onChange={e => setKycData({ ...kycData, farmSize: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="cropTypes">Primary Crop Types</Label>
+              <Input
+                id="cropTypes"
+                placeholder="e.g., Rice, Wheat"
+                value={kycData.cropTypes || ""}
+                onChange={e => setKycData({ ...kycData, cropTypes: e.target.value })}
+                required
+              />
+            </div>
+          </>
+        );
+      case "distributor":
+        return (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="companyName">Company Name</Label>
+              <Input
+                id="companyName"
+                placeholder="Enter your company name"
+                value={kycData.companyName || ""}
+                onChange={e => setKycData({ ...kycData, companyName: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="warehouseCapacity">Warehouse Capacity (tons)</Label>
+              <Input
+                id="warehouseCapacity"
+                type="number"
+                placeholder="Enter warehouse capacity"
+                value={kycData.warehouseCapacity || ""}
+                onChange={e => setKycData({ ...kycData, warehouseCapacity: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="transportLicense">Transport License Number</Label>
+              <Input
+                id="transportLicense"
+                placeholder="Enter transport license number"
+                value={kycData.transportLicense || ""}
+                onChange={e => setKycData({ ...kycData, transportLicense: e.target.value })}
+                required
+              />
+            </div>
+          </>
+        );
+      case "inspector":
+        return (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="certification">Certification Number</Label>
+              <Input
+                id="certification"
+                placeholder="Enter certification number"
+                value={kycData.certification || ""}
+                onChange={e => setKycData({ ...kycData, certification: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="yearsExperience">Years of Experience</Label>
+              <Input
+                id="yearsExperience"
+                type="number"
+                placeholder="Enter years of experience"
+                value={kycData.yearsExperience || ""}
+                onChange={e => setKycData({ ...kycData, yearsExperience: e.target.value })}
+                required
+              />
+            </div>
+          </>
+        );
+      case "retailer":
+        return (
+          <>
+            <div className="space-y-2">
+              <Label htmlFor="storeName">Store Name</Label>
+              <Input
+                id="storeName"
+                placeholder="Enter your store name"
+                value={kycData.storeName || ""}
+                onChange={e => setKycData({ ...kycData, storeName: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="retailLicense">Retail License Number</Label>
+              <Input
+                id="retailLicense"
+                placeholder="Enter retail license number"
+                value={kycData.retailLicense || ""}
+                onChange={e => setKycData({ ...kycData, retailLicense: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="storeLocation">Store Location</Label>
+              <Input
+                id="storeLocation"
+                placeholder="Enter store address"
+                value={kycData.storeLocation || ""}
+                onChange={e => setKycData({ ...kycData, storeLocation: e.target.value })}
+                required
+              />
+            </div>
+          </>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
@@ -109,53 +254,66 @@ const Auth = () => {
             </TabsList>
             
             <TabsContent value="signin">
-              <form onSubmit={handleSignIn} className="space-y-4">
-                <div className="p-3 bg-muted rounded-lg text-sm space-y-1">
-                  <p className="font-semibold">Demo Credentials:</p>
-                  <p>👨‍🌾 Farmer: farmer@demo.com / farmer123</p>
-                  <p>📦 Distributor: distributor@demo.com / dist123</p>
+              <div className="space-y-4">
+                <div className="p-4 bg-muted rounded-lg text-sm space-y-2">
+                  <p className="font-semibold text-center">🔗 Connect Your Wallet</p>
+                  <p className="text-center text-muted-foreground">
+                    Connect your MetaMask wallet to access the platform
+                  </p>
+                  {connectedAddress && (
+                    <p className="text-xs text-center text-green-600 break-all">
+                      Connected: {connectedAddress}
+                    </p>
+                  )}
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signin-email">Email</Label>
-                  <Input
-                    id="signin-email"
-                    type="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signin-password">Password</Label>
-                  <Input
-                    id="signin-password"
-                    type="password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
+                
                 <Button 
-                  type="submit" 
+                  onClick={handleWalletConnect}
                   className="w-full" 
-                  disabled={isLoading}
+                  disabled={isLoggingIn}
                   variant="default"
+                  size="lg"
                 >
-                  {isLoading ? "Signing in..." : "Sign In"}
+                  {isLoggingIn ? (
+                    <>
+                      <span className="animate-spin mr-2">⟳</span>
+                      Connecting Wallet...
+                    </>
+                  ) : (
+                    <>
+                      🦊 Connect MetaMask Wallet
+                    </>
+                  )}
                 </Button>
-              </form>
+
+                
+              </div>
             </TabsContent>
             
             <TabsContent value="signup">
               <form onSubmit={handleSignUp} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="role-select">Select Role</Label>
+                  <Select value={selectedRole} onValueChange={setSelectedRole} required>
+                    <SelectTrigger id="role-select">
+                      <SelectValue placeholder="Select your role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="farmer">🌾 Farmer</SelectItem>
+                      <SelectItem value="distributor">🚚 Distributor</SelectItem>
+                      <SelectItem value="inspector">🔍 Inspector</SelectItem>
+                      <SelectItem value="retailer">🏪 Retailer</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="signup-firstname">First Name</Label>
                     <Input
                       id="signup-firstname"
                       placeholder="First name"
+                      value={kycData.firstName || ""}
+                      onChange={e => setKycData({ ...kycData, firstName: e.target.value })}
                       required
                     />
                   </div>
@@ -164,6 +322,8 @@ const Auth = () => {
                     <Input
                       id="signup-lastname"
                       placeholder="Last name"
+                      value={kycData.lastName || ""}
+                      onChange={e => setKycData({ ...kycData, lastName: e.target.value })}
                       required
                     />
                   </div>
@@ -174,6 +334,8 @@ const Auth = () => {
                     id="signup-email"
                     type="email"
                     placeholder="Enter your email"
+                    value={kycData.email || ""}
+                    onChange={e => setKycData({ ...kycData, email: e.target.value })}
                     required
                   />
                 </div>
@@ -183,25 +345,20 @@ const Auth = () => {
                     id="signup-phone"
                     type="tel"
                     placeholder="Enter your phone number"
+                    value={kycData.phone || ""}
+                    onChange={e => setKycData({ ...kycData, phone: e.target.value })}
                     required
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">Password</Label>
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    placeholder="Create a password"
-                    required
-                  />
-                </div>
-                <Button 
-                  type="submit" 
-                  className="w-full" 
+                {/* Role-specific fields */}
+                {getRoleSpecificFields()}
+                <Button
+                  type="submit"
+                  className="w-full"
                   disabled={isLoading}
                   variant="default"
                 >
-                  {isLoading ? "Creating account..." : "Create Account"}
+                  {isLoading ? "Submitting KYC..." : "Submit KYC"}
                 </Button>
               </form>
             </TabsContent>
