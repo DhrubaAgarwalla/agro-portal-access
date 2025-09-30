@@ -23,38 +23,44 @@ const Auth = () => {
   
 
   const handleWalletConnect = async () => {
-    try {
-      await connectWallet();
+  try {
+    await connectWallet();
+    
+    // Get the connected address from the store
+    const address = useAuthStore.getState().connectedAddress;
+    
+    if (address) {
+      const lowerAddress = address.toLowerCase();
       
-      // Get the connected address from the store
-      const address = useAuthStore.getState().connectedAddress;
-      
-      if (address) {
-        // Route based on wallet address
-        if (address.toLowerCase() === walletRoutes.farmer.toLowerCase()) {
-          toast({
-            title: "Welcome Farmer!",
-            description: "Wallet connected successfully. Redirecting to farmer dashboard...",
-          });
-          navigate("/farmer");
-        } else if (address.toLowerCase() === walletRoutes.distributor.toLowerCase()) {
-          toast({
-            title: "Welcome Distributor!",
-            description: "Wallet connected successfully. Redirecting to distributor dashboard...",
-          });
-          navigate("/distributor");
-        } else {
-          toast({
-            title: "Access Granted",
-            description: "Wallet connected successfully. Redirecting to home page...",
-          });
-          navigate("/home");
-        }
+      // Check if address is in farmer array
+      if (walletRoutes.farmer.some(wallet => wallet.toLowerCase() === lowerAddress)) {
+        toast({
+          title: "Welcome Farmer!",
+          description: "Wallet connected successfully. Redirecting to farmer dashboard...",
+        });
+        navigate("/farmer");
+      } 
+      // Check if address is in distributor array
+      else if (walletRoutes.distributor.some(wallet => wallet.toLowerCase() === lowerAddress)) {
+        toast({
+          title: "Welcome Distributor!",
+          description: "Wallet connected successfully. Redirecting to distributor dashboard...",
+        });
+        navigate("/distributor");
+      } 
+      // Unregistered wallet
+      else {
+        toast({
+          title: "Access Granted",
+          description: "Wallet connected successfully. Redirecting to home page...",
+        });
+        navigate("/home");
       }
-    } catch (error) {
-      console.error("Wallet connection failed:", error);
     }
-  };
+  } catch (error) {
+    console.error("Wallet connection failed:", error);
+  }
+};
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
