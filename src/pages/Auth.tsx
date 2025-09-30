@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useAuthStore } from "@/store/useAuthStore";
 import farmBackground from "@/assets/farm-background.jpg";
+import { walletRoutes } from "@/config/wallets";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -19,10 +20,7 @@ const Auth = () => {
   const { connectWallet, isLoggingIn, connectedAddress } = useAuthStore();
 
   // Demo wallet addresses for routing (you can update these later)
-  const walletRoutes = {
-    farmer: "0x3FC7332686Dd6c6c26fBA2E8856679Ba7759eB1F", // Update with actual farmer wallet address
-    distributor: "0xB1481766aE45af578C236470d4ccd6C5eef35728" // Update with actual distributor wallet address
-  };
+  
 
   const handleWalletConnect = async () => {
     try {
